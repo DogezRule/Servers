@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Run sudo apt update once a day
+    shell:
+      cmd: sudo apt update
+      schedule: "0 0 * * *"

@@ -1,0 +1,53 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Install Apache2
+    apt:
+      name: apache2
+      state: present
+
+  - name: Create a WordPress virtual host
+    apache2:
+      name: wordpress
+      server_name: localhost
+      document_root: /var/www/wordpress
+
+  - name: Download WordPress
+    wget:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /var/www/wordpress.tar.gz
+
+  - name: Untar WordPress
+    shell: tar -xf /var/www/wordpress.tar.gz
+    args:
+      chdir: /var/www
+
+  - name: Remove WordPress tarball
+    file:
+      path: /var/www/wordpress.tar.gz
+      state: absent
+
+  - name: Configure WordPress database
+    mysql_database:
+      name: wordpress
+      state: present
+
+  - name: Create a WordPress user
+    mysql_user:
+      name: wordpress
+      password: password
+      state: present
+
+  - name: Grant all privileges to WordPress user on WordPress database
+    mysql_user:
+      name: wordpress
+      password: password
+      database: wordpress
+      state: present
+      privileges: all
+
+  - name: Restart Apache2
+    service:
+      name: apache2
+      state: restarted

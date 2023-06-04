@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Start qemu-guest-agent
+    systemd:
+      name: qemu-guest-agent
+      state: started
+      enabled: yes
